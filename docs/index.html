@@ -1,0 +1,138 @@
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>P-10</title><meta name="description" content="Documentation for P-10"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">P-10</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1> P-10 </h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography">
+<a href="#práctica-10---sistema-de-ficheros-y-creación-de-procesos-en-nodejs" id="práctica-10---sistema-de-ficheros-y-creación-de-procesos-en-nodejs" style="color: inherit; text-decoration: none;">
+  <h1>Práctica 10 - Sistema de ficheros y creación de procesos en Node.js</h1>
+</a>
+
+<a href="#introduccion" id="introduccion" style="color: inherit; text-decoration: none;">
+  <h2>Introduccion</h2>
+</a>
+<p>En esta practica vamos a hacer uso de la libreria fs, child_process, stream y otros para manejar ficheros e informacion de los mismos.
+Asi como lo que sucede en la CallStack, API y Task Queue.</p>
+<hr>
+
+<a href="#ejercicio-1" id="ejercicio-1" style="color: inherit; text-decoration: none;">
+  <h2>Ejercicio 1</h2>
+</a>
+
+<a href="#ejecucion-del-programa" id="ejecucion-del-programa" style="color: inherit; text-decoration: none;">
+  <h3>Ejecucion del programa</h3>
+</a>
+<p>Si ejecutamos el programa con un archivo que no existe o sin archivo, nos indica por pantalla que especifiquemos un archivo. </p>
+<p><img src="assets/Ejercicio-1.a.png" alt="Alt text"> <!-- Ejecutamos sin fichero a vigilar --></p>
+<p>En caso de que si existe, nos imprime por pantalla que el programa esta empezando a observar el archivo, para observar modificaciones en el. A continuacion imprime por pantalla que el archivo ya no esta siendo observado, se explicará mas adelante. </p>
+<p><img src="assets/Ejercicio-1.b.png" alt="Alt text"> <!-- Ejecutamos con fichero a vigilar pero sin cambiar nada --></p>
+<p>Mientras tanto, si modificamos el archivo, nos muestra dos veces por pantalla que el archivo ha sido modificado, si lo volvemos a modificar, nos vuelvea mostrar el mismo mensaje por segunda vez. Acabamos la ejecucion del programa al ingresar por teclado <code>ctrl + C</code></p>
+<p><img src="assets/Ejercicio-1.c.png" alt="Alt text"> <!-- Ejecutamos con fichero a vigilar cambiando algo --></p>
+
+<a href="#contenido-de-pila-y-registro-de-eventos" id="contenido-de-pila-y-registro-de-eventos" style="color: inherit; text-decoration: none;">
+  <h3>Contenido de Pila y registro de eventos.</h3>
+</a>
+<p><img src="assets/ejercicio-1.gif" alt="Alt text"></p>
+<p>1- Carga en la Call Stack la llamada del programa, que es anonima, despues de esto el programa comprueba si los argumentos son validos, en caso de que si guarda una variable filename el argumento recibido.</p>
+<p>2- En este paso entra la funcion access() a la webAPI, se resuelve esta parte, dando fin a la funcion anonima y a la access.</p>
+<p>3- Que dando asi en este paso en la Task Queen la callback de access.</p>
+<p>4- En este punto se carga la funcion callback de access ya que la Call Stack esta vacia, y entra un console.log() que mostrará: <code>Starting to watch file ${filename}</code> y sale de la Call Stack.</p>
+<p>5- En este punto se llama a la funcion watch que se guarda su contenido en watcher, finalizando asi.</p>
+<p>6- Se carga la funcion watcher.on() en la webAPI.</p>
+<p>7- Entra ahora a la Call Stack un console.log() que mostrara: <code>File ${filename} is no longer watched</code>, cuando acabe sale de la Call Stack.</p>
+<p>8- Pasa de la webAPI el watcher.on() a la Task Queen y termina la callback de acces.</p>
+<p>9- Pasa la callback de watcher.on() a la Call Stack.</p>
+<p>10- Entra un console.log() a la Call Stack, que mostrara: <code>File ${filename} has been modified somehow</code>, finaliza y sale.</p>
+<p>11- Se queda el callback de watcher.on() hasta que acabe el programa.</p>
+
+<a href="#¿qué-hace-la-función-access" id="¿qué-hace-la-función-access" style="color: inherit; text-decoration: none;">
+  <h3><strong>¿Qué hace la función access?</strong></h3>
+</a>
+<p>La funcion access() se encarga de comprobar que el usuario tiene los permisos para acceder al archivo que se le pasa por parametro. Sin embargo, se le pasa como parametro tambien constants.F_OK, por lo tanto ahora, la funcion access nos dice solamente si el fichero existe en el path que le hemos pasado como primer parametro.</p>
+
+<a href="#¿para-qué-sirve-el-objeto-constants" id="¿para-qué-sirve-el-objeto-constants" style="color: inherit; text-decoration: none;">
+  <h3><strong>¿Para qué sirve el objeto constants?</strong></h3>
+</a>
+<p>Son objetos que se usan en la funcion access, tenemos diferentes tipos:</p>
+<p><em>F_OK</em>: Nos dice si existe el path.</p>
+<p><em>R_OK</em>: Nos dice si tenemos permisos de lectura del path.</p>
+<p><em>W_OK</em>: Nos dice si tenemos permisos de escritura del path.</p>
+<p><em>X_OK</em>: Nos dice si tenemos permisos de ejecucuion del path.</p>
+<hr>
+
+<a href="#ejercicio-2" id="ejercicio-2" style="color: inherit; text-decoration: none;">
+  <h2>Ejercicio 2</h2>
+</a>
+<p>En este ejercicio se nos pedia simular los comando cat y grep, proporcionando por argumentos al programa, el fichero y la palabra que tendriamos que buscar, pero ademas de esto, este se tenia que hacer de dos formas, una usando las <em>pipes</em> y otro sin usarlas.</p>
+<p><strong>Para el que usamos <em>pipes</em></strong>:</p>
+<p>Creamos dos procesos con <code>spawn</code> importado de <code>child_process</code> y el resultado del primero que era el cat se lo pasabamos al segundo a travez de la <em>pipe</em></p>
+<pre><code class="language-ts"><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-2">cat</span><span class="hl-1"> = </span><span class="hl-3">spawn</span><span class="hl-1">(</span><span class="hl-4">&#39;cat&#39;</span><span class="hl-1">, [</span><span class="hl-5">path</span><span class="hl-1">]);</span><br/><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-2">grep</span><span class="hl-1"> = </span><span class="hl-3">spawn</span><span class="hl-1">(</span><span class="hl-4">&#39;grep&#39;</span><span class="hl-1">, [</span><span class="hl-5">word</span><span class="hl-1">])</span><br/><span class="hl-5">cat</span><span class="hl-1">.</span><span class="hl-5">stdout</span><span class="hl-1">.</span><span class="hl-3">pipe</span><span class="hl-1">(</span><span class="hl-5">grep</span><span class="hl-1">.</span><span class="hl-5">stdin</span><span class="hl-1">);</span>
+</code></pre>
+<p>De esta forma el grep en su evento <code>&quot;onData&quot;</code> tiene las lineas de texto que contengan la palabra a buscar, y lo vamos concatenando apra guardarlo.</p>
+<pre><code class="language-ts"><span class="hl-5">grep</span><span class="hl-1">.</span><span class="hl-5">stdout</span><span class="hl-1">.</span><span class="hl-3">on</span><span class="hl-1">(</span><span class="hl-4">&quot;data&quot;</span><span class="hl-1">, (</span><span class="hl-5">data</span><span class="hl-1">)</span><span class="hl-0">=&gt;</span><span class="hl-1">{</span><br/><span class="hl-1">  </span><span class="hl-5">stringData</span><span class="hl-1"> += </span><span class="hl-5">data</span><br/><span class="hl-1">})</span><br/><span class="hl-5">grep</span><span class="hl-1">.</span><span class="hl-3">on</span><span class="hl-1">(</span><span class="hl-4">&#39;close&#39;</span><span class="hl-1">, () </span><span class="hl-0">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  ...</span><br/><span class="hl-1">})</span>
+</code></pre>
+<p>Una vez se activa el evento de <code>close</code> del grep, ya terminamos de recibir informacion, por lo cual ya podremos trabajar con el resultado, para contar la cantidad de veces que aparece la palabra que queriamos contar.</p>
+<p><strong>Para el que usamos NO <em>pipes</em></strong>:</p>
+<p>Para este creamos dos procesos con el spawn, primero el cat que recibira la informacion del fichero y mediante el evento <code>&quot;onData&quot;</code> vamos escribiendo esta informacion en el buffer de entrada del segundo proceso, el grep, el cual tiene un evento <code>&quot;onData&quot;</code> que se encarga de ir concatenando toda la informacion que le llega, una vez termine el cat el <code>&quot;onData&quot;</code>, tendria que activarse el <code>&quot;onClose&quot;</code> que esto emitira otro evento que le indica al grep que ya termino de recibir informacion.</p>
+<p>A continuacion el grep, activa su <code>&quot;onClose&quot;</code> permitiendo asi que se pueda trabajar con toda la informacion obtenida y buscar la palabra a contar.</p>
+<pre><code class="language-ts"><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-2">cat</span><span class="hl-1"> = </span><span class="hl-3">spawn</span><span class="hl-1">(</span><span class="hl-4">&#39;cat&#39;</span><span class="hl-1">, [</span><span class="hl-5">path</span><span class="hl-1">])</span><br/><span class="hl-0">const</span><span class="hl-1"> </span><span class="hl-2">grep</span><span class="hl-1"> = </span><span class="hl-3">spawn</span><span class="hl-1">(</span><span class="hl-4">&#39;grep&#39;</span><span class="hl-1">, [</span><span class="hl-5">word</span><span class="hl-1">])</span><br/><br/><span class="hl-5">cat</span><span class="hl-1">.</span><span class="hl-5">stdout</span><span class="hl-1">.</span><span class="hl-3">on</span><span class="hl-1">(</span><span class="hl-4">&#39;data&#39;</span><span class="hl-1">, (</span><span class="hl-5">data</span><span class="hl-1">) </span><span class="hl-0">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">grep</span><span class="hl-1">.</span><span class="hl-5">stdin</span><span class="hl-1">.</span><span class="hl-3">write</span><span class="hl-1">(</span><span class="hl-5">data</span><span class="hl-1">)</span><br/><span class="hl-1">})</span><br/><span class="hl-5">cat</span><span class="hl-1">.</span><span class="hl-3">on</span><span class="hl-1">(</span><span class="hl-4">&#39;close&#39;</span><span class="hl-1">, () </span><span class="hl-0">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">grep</span><span class="hl-1">.</span><span class="hl-5">stdin</span><span class="hl-1">.</span><span class="hl-3">end</span><span class="hl-1">()</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-5">grep</span><span class="hl-1">.</span><span class="hl-5">stdout</span><span class="hl-1">.</span><span class="hl-3">on</span><span class="hl-1">(</span><span class="hl-4">&#39;data&#39;</span><span class="hl-1">, (</span><span class="hl-5">data</span><span class="hl-1">) </span><span class="hl-0">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">stringData</span><span class="hl-1"> += </span><span class="hl-5">data</span><br/><span class="hl-1">})</span><br/><span class="hl-5">grep</span><span class="hl-1">.</span><span class="hl-3">on</span><span class="hl-1">(</span><span class="hl-4">&#39;close&#39;</span><span class="hl-1">, () </span><span class="hl-0">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  ...</span><br/><span class="hl-1">})</span>
+</code></pre>
+<blockquote>
+<p>La referencia a <code>&quot;onData&quot;</code> quiere decir:</p>
+<pre><code class="language-ts"><span class="hl-5">proccess</span><span class="hl-1">.</span><span class="hl-5">stdout</span><span class="hl-1">.</span><span class="hl-3">on</span><span class="hl-1">(</span><span class="hl-4">&#39;data&#39;</span><span class="hl-1">, (</span><span class="hl-5">data</span><span class="hl-1">) </span><span class="hl-0">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">})</span>
+</code></pre>
+</blockquote>
+<hr>
+
+<a href="#ejercicio-3" id="ejercicio-3" style="color: inherit; text-decoration: none;">
+  <h2>Ejercicio 3</h2>
+</a>
+<p>Se nos solicitaba el seguimiento de los ficheros de un usuario, basado en la Practica 9.</p>
+<blockquote>
+<p>Se a copiado el codigo compilado de la Practica 9 para que se pueda llevar a cabo la prueba de este ejercicio.</p>
+</blockquote>
+<p>En este ejercicio pasandole un nombre de usuario, el programa tenia que notificar cualquier cambio en ese directorio con respecto a las notas del usuario.Para esto haciendo uso de los argumentos del proceso, comprobamos  que se nos pasa el nombre del usuario como 2 argumento.</p>
+<pre><code class="language-ts"><span class="hl-6">if</span><span class="hl-1">(</span><span class="hl-5">process</span><span class="hl-1">.</span><span class="hl-5">argv</span><span class="hl-1">[</span><span class="hl-7">2</span><span class="hl-1">] == </span><span class="hl-0">undefined</span><span class="hl-1">){</span><br/><span class="hl-1">    </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-3">log</span><span class="hl-1">(</span><span class="hl-4">&quot;Indique un Usuario.&quot;</span><span class="hl-1">);</span><br/><span class="hl-1">}</span>
+</code></pre>
+<p>Cuando se le pasa el nombre de dicho usuario, compruebo que exista este usuario, comprobando si puedo acceder a la ruta.</p>
+<pre><code class="language-ts"><span class="hl-3">access</span><span class="hl-1">(</span><span class="hl-4">`./database/</span><span class="hl-0">${</span><span class="hl-5">process</span><span class="hl-8">.</span><span class="hl-5">argv</span><span class="hl-8">[</span><span class="hl-7">2</span><span class="hl-8">]</span><span class="hl-0">}</span><span class="hl-4">/`</span><span class="hl-1">, </span><span class="hl-5">constants</span><span class="hl-1">.</span><span class="hl-2">F_OK</span><span class="hl-1">,(</span><span class="hl-5">err</span><span class="hl-1">) </span><span class="hl-0">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-6">if</span><span class="hl-1"> (</span><span class="hl-5">err</span><span class="hl-1">) {</span><br/><span class="hl-1">        </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-3">log</span><span class="hl-1">(</span><span class="hl-4">`El usario </span><span class="hl-0">${</span><span class="hl-5">process</span><span class="hl-8">.</span><span class="hl-5">argv</span><span class="hl-8">[</span><span class="hl-7">2</span><span class="hl-8">]</span><span class="hl-0">}</span><span class="hl-4"> no existe`</span><span class="hl-1">);</span><br/><span class="hl-1">    }</span>
+</code></pre>
+<p>Una vez comprobado que el usuario existe, osea se puede acceder a su directorio, pongo en seguimiento esta ruta, mediante el uso del <code>watch()</code></p>
+<pre><code class="language-ts"><span class="hl-3">watch</span><span class="hl-1">(</span><span class="hl-4">`./database/</span><span class="hl-0">${</span><span class="hl-5">process</span><span class="hl-8">.</span><span class="hl-5">argv</span><span class="hl-8">[</span><span class="hl-7">2</span><span class="hl-8">]</span><span class="hl-0">}</span><span class="hl-4">/`</span><span class="hl-1">, (</span><span class="hl-5">eventType</span><span class="hl-1">, </span><span class="hl-5">filename</span><span class="hl-1">) </span><span class="hl-0">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-3">log</span><span class="hl-1">(</span><span class="hl-4">&quot;</span><span class="hl-9">\n</span><span class="hl-4">El fichero&quot;</span><span class="hl-1">, </span><span class="hl-5">filename</span><span class="hl-1">, </span><span class="hl-4">&quot;ha cambiado!&quot;</span><span class="hl-1">);</span><br/><span class="hl-1">        </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-3">log</span><span class="hl-1">(</span><span class="hl-4">&quot;El cambio fue de tipo:&quot;</span><span class="hl-1">, </span><span class="hl-5">eventType</span><span class="hl-1">);</span><br/><span class="hl-1">    })</span>
+</code></pre>
+<p>Cada vez que el se crea, modifica o elimina una nota del usuario, saldira en la consola el tipo de cambio y el fichero que cambio.</p>
+<p>Con respecto a las perguntas finales, para ver el contenido del fichero que cambio, basta con tomar el nombre del fichero y hacer uso del spawn para invocar el comando <code>cat</code> sobre ese fichero y mostrar en la consola su contenido.</p>
+<p>Con la segunda pregunta, para resolverlo planteado podriamos hacer uso de un paquete <code>npm</code> que se llama <a href="https://www.npmjs.com/package/chokidar">Chokidar</a> que nos permite realizar todas esas acciones.</p>
+<hr>
+
+<a href="#ejercicio-4" id="ejercicio-4" style="color: inherit; text-decoration: none;">
+  <h2>Ejercicio 4</h2>
+</a>
+<p>En este ejercicio se nos solicitaba que el programa realizara multipoles funciones tales como: </p>
+<ul>
+<li>Compruba si path es un fichero o directorio.</li>
+<li>Crea un directorio en el path.</li>
+<li>Lista los ficheros dentro del path.</li>
+<li>Muestra el contenido del fichero que indica el path.</li>
+<li>Borra lo que indique el path.</li>
+<li>Mueve el contenido del path_origen a path_destino.</li>
+<li>Copia el contenido del path_origen a path_destino.</li>
+</ul>
+<p>Para el desarrollo de este ejercicio, usamos los argumentos del proceso, prmero comprobamos que se le pasa al menos un argumento.</p>
+<pre><code class="language-ts"><span class="hl-6">if</span><span class="hl-1"> (</span><span class="hl-5">process</span><span class="hl-1">.</span><span class="hl-5">argv</span><span class="hl-1">.</span><span class="hl-5">length</span><span class="hl-1"> &lt; </span><span class="hl-7">3</span><span class="hl-1">) {</span><br/><span class="hl-1">    </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-3">log</span><span class="hl-1">(</span><span class="hl-4">&quot;Use help para la ayuda&quot;</span><span class="hl-1">);</span><br/><span class="hl-1">}</span>
+</code></pre>
+<p>En caso de no indicar un argumento mostramos en la consola que use help para obtener ayuda, es aqui donde entra un <code>switch()</code> donde en cada <code>case</code> se comprueba el argumento idicado realizando ese fragmento de codigo.
+Donde el codigo consta de 8 case, <code>help</code>, <code>check</code>, <code>mkdir</code>, <code>ll</code>, <code>cat</code>, <code>rm</code>, <code>mv</code>,<code>cp</code> y el default, para si indica un argumento que no este en la lista.</p>
+<ul>
+<li><p>El <em><code>help</code></em> mustra una lista de opciones validas y lo que hace cada una.</p>
+</li>
+<li><p>El <em><code>check</code></em> comprobamos que se le pasa una ruta osea el argumento 3 del proceso, una vez comprobado, se llama a la funcion <code>spawn()</code> con la funcion ls y los argumentos -ld y la ruta, y su resultado lo guardamos en <em>check</em>, ahora mediante la stdout invocada por <em>check</em> recogemos todos los datos entrante con el evento on data, y acumulamos el resultado en <em>res_check</em>, despues tomamos la primera posicion de esta variable, que al ser un string, es como tomar el primer caracter del string, y si es un &quot;-&quot; significa que es un fichero y en otro caso &quot;d&quot; es un directorio.</p>
+</li>
+<li><p>El <em><code>mkdir</code></em> comprobamos que se le indica una ruta, la cual es la que se va a crear, ya sabiendo que se le paso la ruta como argumento, se llama a la funcion <code>sapwn()</code> con la funcion mkdir y argumento la ruta indicada, creando asi el directorio, e imprimiendo en consola un mensaje de &quot;Directorio creado&quot;.</p>
+</li>
+<li><p>El <em><code>ll</code></em> comprobamos que se le pasa una ruta como argumento 3, que sera la que se listara su contenido. Comprobamos que se puede acceder a dicha ruta si es satisfactorio, usamos un <code>spawn()</code> con al funcion ls y argumento -l y la ruta su resultado lo guardamos en <em>ll</em> y mediante el uso de <code>pipe()</code> mostramos el contenido en la consola.</p>
+</li>
+<li><p>El <em><code>cat</code></em> comprobamos que se nos indica una ruta a un fichero, del cual mostraremos su contenido, comprobamos tambien que podemos acceder a dicho fichero y si todo es afirmativo, usamos <code>spawn()</code> con la funcion ls y como argumento la ruta del fichero, guardando esto en <em>ls</em> y mediante el uso de <code>pipe()</code> mostramos el contenido en la consola.</p>
+</li>
+<li><p>El <em><code>rm</code></em> comprobamos que se nos indica una ruta, la cual borraremos, tambien comprobamos que existe esta ruta, para acontinuacion mediante el <code>spawn()</code> pasandole la funcion rm y como argumento del mismo -rf y la ruta, el -rf es para que borre todo indistinto de si es un directorio o fichero. cuando termina muestra un mensaje en la consola.</p>
+</li>
+<li><p>El <em><code>mv</code></em> y <em><code>cp</code></em> son practicamento lo mismo, comprobamos que se pasa una ruta origen y una ruta destino, luego comprobamos el acceso a dichas rutas, para a continuacion llevar una comprobacion muy larga haciendo uso del <em>check</em> del inicio, ya que no se puede copiar ni mover un directorio a un fichero, pues comprobamos que son cada ruta y si no son directorio hacia fichero, se llama al <code>spawn()</code> pasandole como funcion el mv o cp y argumento en caso de cp el -r para que sea una copia recursiva, y las dos ruta de origen y destino, al finalizar mostramos un mensaje en la consola.</p>
+</li>
+</ul>
+<hr>
+</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>

@@ -1,33 +1,40 @@
-import { spawn } from 'child_process';
-import { access, constants, watch } from 'fs';
+import { spawn } from 'child_process'
+import { access, constants, watch } from 'fs'
 
+/**
+ * Busca en un fichero dado, una palabra dada
+ */
 if (process.argv.length < 4) {
-  console.log('---------- Help ----------');
-  console.log('First Argument Path File');
-  console.log('Second Argument Word Find');
-  console.log('Third Argument Method (Pipe) Optional');
-  console.log("-------- Example --------");
-  console.log("node file.js ./my/file myWord myMethod");  
+  console.log('---------- Help ----------')
+  console.log('First Argument Path File')
+  console.log('Second Argument Word Find')
+  console.log('Third Argument Method (Pipe) Optional')
+  console.log("-------- Example --------")
+  console.log("node file.js ./my/file myWord myMethod")
 } else {
-  const path = process.argv[2];
-  const word = process.argv[3];
+  // Guardamos y mostramos las variables con las que se trabajaran
+  const path = process.argv[2]
+  const word = process.argv[3]
   const method = process.argv[4] ? process.argv[4] : "Sin Pipe"
   console.clear()
-  console.log("Ruta: ", path);
-  console.log("Palabra: ", word);
-  console.log("Metodo: ", method);
+  console.log("Ruta: ", path)
+  console.log("Palabra: ", word)
+  console.log("Metodo: ", method)
 
+  // Comprobamos el acceso al fichero
   access(path, constants.F_OK, (err) => {
     if (err) {
-      console.log(`File ${path} does not exist`);
+      console.log(`File ${path} does not exist`)
     } else {
       if (method === "Pipe") {
         // Codigo con pipe
         let stringData = ""
-        const cat = spawn('cat', [path]);
+
+        const cat = spawn('cat', [path])
         const grep = spawn('grep', [word])
-        cat.stdout.pipe(grep.stdin);
-        grep.stdout.on("data", (data)=>{
+
+        cat.stdout.pipe(grep.stdin)
+        grep.stdout.on("data", (data) => {
           stringData += data
         })
         grep.stderr.on('data', (data) => {
@@ -40,8 +47,6 @@ if (process.argv.length < 4) {
           console.log("La palabra " + word + " tiene un ocurrencia de " + result)
           return result
         })
-
-
       }
       else {
         //Codigo sin pipe
@@ -76,5 +81,5 @@ if (process.argv.length < 4) {
         })
       }
     }
-  });
+  })
 }

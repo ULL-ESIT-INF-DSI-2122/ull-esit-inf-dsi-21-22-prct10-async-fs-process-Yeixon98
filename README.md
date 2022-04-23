@@ -1,10 +1,5 @@
 # Práctica 10 - Sistema de ficheros y creación de procesos en Node.js
 
-[![Tests](https://github.com/ULL-ESIT-INF-DSI-2122/ull-esit-inf-dsi-21-22-prct10-async-fs-process-Yeixon98/actions/workflows/tests.yml/badge.svg)](https://github.com/ULL-ESIT-INF-DSI-2122/ull-esit-inf-dsi-21-22-prct10-async-fs-process-Yeixon98/actions/workflows/tests.yml)
-[![Coverage Status](https://coveralls.io/repos/github/ULL-ESIT-INF-DSI-2122/ull-esit-inf-dsi-21-22-prct10-async-fs-process-Yeixon98/badge.svg?branch=main)](https://coveralls.io/github/ULL-ESIT-INF-DSI-2122/ull-esit-inf-dsi-21-22-prct10-async-fs-process-Yeixon98?branch=main)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ULL-ESIT-INF-DSI-2122_ull-esit-inf-dsi-21-22-prct10-async-fs-process-Yeixon98&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ULL-ESIT-INF-DSI-2122_ull-esit-inf-dsi-21-22-prct10-async-fs-process-Yeixon98)
-
-
 ## Introduccion 
 En esta practica vamos a hacer uso de la libreria fs, child_process, stream y otros para manejar ficheros e informacion de los mismos.
 Asi como lo que sucede en la CallStack, API y Task Queue.
@@ -134,9 +129,9 @@ grep.on('close', () => {
 ## Ejercicio 3 
 Se nos solicitaba el seguimiento de los ficheros de un usuario, basado en la Practica 9.
 
-Dato a tener en cuenta, la ruta esta establecida hacia la carpeta donde se guardan los usuarios en la Practica 9.
+> Se a copiado el codigo compilado de la Practica 9 para que se pueda llevar a cabo la prueba de este ejercicio.
 
-En este ejercicio pasandole un nombre de usuario, el programa tenia que notificar cualquier cambio en ese directorio con respecto a las notas del usuario. Para esto haciendo uso de los argumentos del proceso, comprobamos  que se nos pasa el nombre del usuario como 2 argumento.
+En este ejercicio pasandole un nombre de usuario, el programa tenia que notificar cualquier cambio en ese directorio con respecto a las notas del usuario.Para esto haciendo uso de los argumentos del proceso, comprobamos  que se nos pasa el nombre del usuario como 2 argumento.
 ```ts
 if(process.argv[2] == undefined){
     console.log("Indique un Usuario.");
@@ -144,14 +139,14 @@ if(process.argv[2] == undefined){
 ```
 Cuando se le pasa el nombre de dicho usuario, compruebo que exista este usuario, comprobando si puedo acceder a la ruta.
 ```ts
-access(`/root/DSI/P-09/database/${process.argv[2]}/`, constants.F_OK,(err) => {
+access(`./database/${process.argv[2]}/`, constants.F_OK,(err) => {
     if (err) {
         console.log(`El usario ${process.argv[2]} no existe`);
     }
 ```
 Una vez comprobado que el usuario existe, osea se puede acceder a su directorio, pongo en seguimiento esta ruta, mediante el uso del ```watch()```
 ```ts
-watch(`/root/DSI/P-09/database/${process.argv[2]}/`, (eventType, filename) => {
+watch(`./database/${process.argv[2]}/`, (eventType, filename) => {
         console.log("\nEl fichero", filename, "ha cambiado!");
         console.log("El cambio fue de tipo:", eventType);
     })
