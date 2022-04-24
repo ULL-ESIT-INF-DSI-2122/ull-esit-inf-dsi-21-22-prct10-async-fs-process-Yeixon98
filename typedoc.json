@@ -1,9 +1,10 @@
 {
   "entryPoints": [
-    "./src/ejercicio-01.ts",
-    "./src/ejercicio-02.ts",
-    "./src/ejercicio-03.ts",
-    "./src/ejercicio-04.ts"
+    "./src/ejercicio-01/Watcher.ts",
+    "./src/ejercicio-02/analizeWithOutPipe.ts",
+    "./src/ejercicio-02/analizeWithPipe.ts",
+    "./src/ejercicio-03/Watcher.ts",
+    "./src/ejercicio-04/actions.ts"
   ],
   "out": "./docs"
 }

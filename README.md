@@ -1,5 +1,9 @@
 # Práctica 10 - Sistema de ficheros y creación de procesos en Node.js
 
+[![Tests](https://github.com/ULL-ESIT-INF-DSI-2122/ull-esit-inf-dsi-21-22-prct10-async-fs-process-Yeixon98/actions/workflows/tests.yml/badge.svg)](https://github.com/ULL-ESIT-INF-DSI-2122/ull-esit-inf-dsi-21-22-prct10-async-fs-process-Yeixon98/actions/workflows/tests.yml)
+[![Coverage Status](https://coveralls.io/repos/github/ULL-ESIT-INF-DSI-2122/ull-esit-inf-dsi-21-22-prct10-async-fs-process-Yeixon98/badge.svg?branch=main)](https://coveralls.io/github/ULL-ESIT-INF-DSI-2122/ull-esit-inf-dsi-21-22-prct10-async-fs-process-Yeixon98?branch=main)
+
+
 ## Introduccion 
 En esta practica vamos a hacer uso de la libreria fs, child_process, stream y otros para manejar ficheros e informacion de los mismos.
 Asi como lo que sucede en la CallStack, API y Task Queue.
@@ -14,7 +18,7 @@ Si ejecutamos el programa con un archivo que no existe o sin archivo, nos indica
 
 ![Alt text](assets/Ejercicio-1.a.png) <!-- Ejecutamos sin fichero a vigilar -->
 
-En caso de que si existe, nos imprime por pantalla que el programa esta empezando a observar el archivo, para observar modificaciones en el. A continuacion imprime por pantalla que el archivo ya no esta siendo observado, se explicará mas adelante. 
+En caso de que si existe, nos imprime por pantalla que el programa esta empezando a observar el archivo, para observar modificaciones en el. A continuacion imprime por pantalla que el archivo ya no esta siendo observado, esto se debe a que el metodo `watch` es asincrono, por lo que sigue en ejecucion, minetras que el programa principal puede seguir su ejecucion. 
 
 ![Alt text](assets/Ejercicio-1.b.png) <!-- Ejecutamos con fichero a vigilar pero sin cambiar nada -->
 
@@ -64,6 +68,8 @@ _W_OK_: Nos dice si tenemos permisos de escritura del path.
 
 _X_OK_: Nos dice si tenemos permisos de ejecucuion del path.
 
+> <h2>Los test no se pueden llevar acabo en este ejercicio, debido a que todo el codigo trabaja de forma asincrona y se mantiene en ejecicion, sin un estado final definido.</h2>
+
 ***
 
 ## Ejercicio 2
@@ -80,7 +86,7 @@ const grep = spawn('grep', [word])
 cat.stdout.pipe(grep.stdin);
 ```
 
-De esta forma el grep en su evento `"onData"` tiene las lineas de texto que contengan la palabra a buscar, y lo vamos concatenando apra guardarlo.
+De esta forma el grep en su evento `"onData"` tiene las lineas de texto que contengan la palabra a buscar, y lo vamos concatenando para guardarlo.
 
 ```ts
 grep.stdout.on("data", (data)=>{
@@ -123,15 +129,18 @@ grep.on('close', () => {
 >proccess.stdout.on('data', (data) => {
 >})
 >```
+>&nbsp;
+
+> <h2>Los test no se pueden llevar acabo en este ejercicio, debido a que todo el codigo trabaja de forma asincrona</h2>
 
 ***
 
 ## Ejercicio 3 
 Se nos solicitaba el seguimiento de los ficheros de un usuario, basado en la Practica 9.
 
-> Se a copiado el codigo compilado de la Practica 9 para que se pueda llevar a cabo la prueba de este ejercicio.
+Dato a tener en cuenta, la ruta esta establecida hacia la carpeta donde se guardan los usuarios en la Practica 9.
 
-En este ejercicio pasandole un nombre de usuario, el programa tenia que notificar cualquier cambio en ese directorio con respecto a las notas del usuario.Para esto haciendo uso de los argumentos del proceso, comprobamos  que se nos pasa el nombre del usuario como 2 argumento.
+En este ejercicio pasandole un nombre de usuario, el programa tenia que notificar cualquier cambio en ese directorio con respecto a las notas del usuario. Para esto haciendo uso de los argumentos del proceso, comprobamos que se nos pasa el nombre del usuario como 2 argumento.
 ```ts
 if(process.argv[2] == undefined){
     console.log("Indique un Usuario.");
@@ -140,16 +149,16 @@ if(process.argv[2] == undefined){
 Cuando se le pasa el nombre de dicho usuario, compruebo que exista este usuario, comprobando si puedo acceder a la ruta.
 ```ts
 access(`./database/${process.argv[2]}/`, constants.F_OK,(err) => {
-    if (err) {
-        console.log(`El usario ${process.argv[2]} no existe`);
-    }
+  if (err) {
+      console.log(`El usario ${process.argv[2]} no existe`);
+  }
 ```
 Una vez comprobado que el usuario existe, osea se puede acceder a su directorio, pongo en seguimiento esta ruta, mediante el uso del ```watch()```
 ```ts
 watch(`./database/${process.argv[2]}/`, (eventType, filename) => {
-        console.log("\nEl fichero", filename, "ha cambiado!");
-        console.log("El cambio fue de tipo:", eventType);
-    })
+  console.log("\nEl fichero", filename, "ha cambiado!");
+  console.log("El cambio fue de tipo:", eventType);
+})
 ```
 
 Cada vez que el se crea, modifica o elimina una nota del usuario, saldira en la consola el tipo de cambio y el fichero que cambio.
@@ -157,6 +166,8 @@ Cada vez que el se crea, modifica o elimina una nota del usuario, saldira en la 
 Con respecto a las perguntas finales, para ver el contenido del fichero que cambio, basta con tomar el nombre del fichero y hacer uso del spawn para invocar el comando `cat` sobre ese fichero y mostrar en la consola su contenido.
 
 Con la segunda pregunta, para resolverlo planteado podriamos hacer uso de un paquete `npm` que se llama [Chokidar](https://www.npmjs.com/package/chokidar) que nos permite realizar todas esas acciones.
+
+> <h2>Los test no se pueden llevar acabo en este ejercicio, debido a que todo el codigo trabaja de forma asincrona y se mantiene en ejecicion, sin un estado final definido.</h2>
 
 ***
 
@@ -192,5 +203,7 @@ Donde el codigo consta de 8 case, `help`, `check`, `mkdir`, `ll`, `cat`, `rm`, `
 * El _`rm`_ comprobamos que se nos indica una ruta, la cual borraremos, tambien comprobamos que existe esta ruta, para acontinuacion mediante el `spawn()` pasandole la funcion rm y como argumento del mismo -rf y la ruta, el -rf es para que borre todo indistinto de si es un directorio o fichero. cuando termina muestra un mensaje en la consola.
 
 * El _`mv`_ y _`cp`_ son practicamento lo mismo, comprobamos que se pasa una ruta origen y una ruta destino, luego comprobamos el acceso a dichas rutas, para a continuacion llevar una comprobacion muy larga haciendo uso del _check_ del inicio, ya que no se puede copiar ni mover un directorio a un fichero, pues comprobamos que son cada ruta y si no son directorio hacia fichero, se llama al `spawn()` pasandole como funcion el mv o cp y argumento en caso de cp el -r para que sea una copia recursiva, y las dos ruta de origen y destino, al finalizar mostramos un mensaje en la consola.
+
+> <h2>Los test no se pueden llevar acabo en este ejercicio, debido a que todo el codigo trabaja de forma asincrona</h2>
 
 ***
