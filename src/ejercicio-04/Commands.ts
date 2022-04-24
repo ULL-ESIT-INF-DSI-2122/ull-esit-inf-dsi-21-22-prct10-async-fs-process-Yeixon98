@@ -32,11 +32,11 @@ export default class Commands {
    */
   check = (path: string) => {
     const check = spawn("ls", ["-ld", path]);
-    let res_check = "";
-    check.stdout.on("data", (piece) => (res_check += piece));
+    let resCheck = "";
+    check.stdout.on("data", (piece) => (resCheck += piece));
 
     check.on("close", () => {
-      if (res_check[0] == "-") {
+      if (resCheck[0] === "-") {
         console.clear();
         console.log(path + " es un fichero");
       } else {
@@ -57,7 +57,7 @@ export default class Commands {
   };
 
   /**
-   * Lista todo el contenido de la ruta
+   * Lista el contenido de la ruta
    * @param path Ruta
    */
   ll = (path: string) => {
@@ -109,38 +109,38 @@ export default class Commands {
 
   /**
    * Mueve el contenido de la ruta origen a la ruta destino
-   * @param path_o Ruta Origen
-   * @param path_d Ruta Destino
+   * @param pathOrigin Ruta Origen
+   * @param pathDestiny Ruta Destino
    */
-  mv = (path_o: string, path_d: string) => {
-    fs.access(path_o, fs.constants.F_OK, (err) => {
+  mv = (pathOrigin: string, pathDestiny: string) => {
+    fs.access(pathOrigin, fs.constants.F_OK, (err) => {
       if (err) {
         console.clear();
-        console.log(`La ruta ${path_o} no existe`);
+        console.log(`La ruta ${pathOrigin} no existe`);
       } else {
-        fs.access(path_d, fs.constants.F_OK, (err) => {
-          if (err) {
+        fs.access(pathDestiny, fs.constants.F_OK, (err_) => {
+          if (err_) {
             console.clear();
-            console.log(`La ruta ${path_d} no existe`);
+            console.log(`La ruta ${pathDestiny} no existe`);
           } else {
             // Para obtener si la ruta origen es un directorio o fichero
-            const check_1 = spawn("ls", ["-ld", path_o]);
-            let check_path_1 = "";
-            check_1.stdout.on("data", (piece) => (check_path_1 += piece));
+            const checkOne = spawn("ls", ["-ld", pathOrigin]);
+            let checkPathOne = "";
+            checkOne.stdout.on("data", (piece) => (checkPathOne += piece));
 
-            check_1.on("close", () => {
+            checkOne.on("close", () => {
               // Para obtener si la ruta destino es un directorio o fichero
-              const check_2 = spawn("ls", ["-ld", path_d]);
-              let check_path_2 = "";
-              check_2.stdout.on("data", (piece) => (check_path_2 += piece));
+              const checkTwo = spawn("ls", ["-ld", pathDestiny]);
+              let checkPathTwo = "";
+              checkTwo.stdout.on("data", (piece) => (checkPathTwo += piece));
 
-              check_2.on("close", () => {
+              checkTwo.on("close", () => {
                 // Una vez sabemos que son podemos decidir segun la condicion
-                if (check_path_1[0] == "d" && check_path_2[0] == "-") {
+                if (checkPathOne[0] === "d" && checkPathTwo[0] === "-") {
                   console.clear();
                   console.log("No se puedo mover un directorio a un fichero");
                 } else {
-                  spawn("mv", [path_o, path_d]);
+                  spawn("mv", [pathOrigin, pathDestiny]);
                   console.clear();
                   console.log("Operacion realizada");
                 }
@@ -154,38 +154,38 @@ export default class Commands {
 
   /**
    * Copia el contenido de la ruta origen a la ruta destino
-   * @param path_o Ruta Origen
-   * @param path_d Ruta Destino
+   * @param pathOrigin Ruta Origen
+   * @param pathDestiny Ruta Destino
    */
-  cp = (path_o: string, path_d: string) => {
-    fs.access(path_o, fs.constants.F_OK, (err) => {
+  cp = (pathOrigin: string, pathDestiny: string) => {
+    fs.access(pathOrigin, fs.constants.F_OK, (err) => {
       if (err) {
         console.clear();
-        console.log(`La ruta ${path_o} no existe`);
+        console.log(`La ruta ${pathOrigin} no existe`);
       } else {
-        fs.access(path_d, fs.constants.F_OK, (err) => {
-          if (err) {
+        fs.access(pathDestiny, fs.constants.F_OK, (err_) => {
+          if (err_) {
             console.clear();
-            console.log(`La ruta ${path_d} no existe`);
+            console.log(`La ruta ${pathDestiny} no existe`);
           } else {
             // Para obtener si la ruta origen es un directorio o fichero
-            const check_1 = spawn("ls", ["-ld", path_o]);
-            let check_path_1 = "";
-            check_1.stdout.on("data", (piece) => (check_path_1 += piece));
+            const checkOne = spawn("ls", ["-ld", pathOrigin]);
+            let checkPathOne = "";
+            checkOne.stdout.on("data", (piece) => (checkPathOne += piece));
 
-            check_1.on("close", () => {
+            checkOne.on("close", () => {
               // Para obtener si la ruta destino es un directorio o fichero
-              const check_2 = spawn("ls", ["-ld", path_d]);
-              let check_path_2 = "";
-              check_2.stdout.on("data", (piece) => (check_path_2 += piece));
+              const checkTwo = spawn("ls", ["-ld", pathDestiny]);
+              let checkPathTwo = "";
+              checkTwo.stdout.on("data", (piece) => (checkPathTwo += piece));
 
-              check_2.on("close", () => {
+              checkTwo.on("close", () => {
                 // Una vez sabemos que son podemos decidir segun la condicion
-                if (check_path_1[0] == "d" && check_path_2[0] == "-") {
+                if (checkPathOne[0] === "d" && checkPathTwo[0] === "-") {
                   console.clear();
                   console.log("No se puedo mover un directorio a un fichero");
                 } else {
-                  spawn("cp", ["-r", path_o, path_d]);
+                  spawn("cp", ["-r", pathOrigin, pathDestiny]);
                   console.clear();
                   console.log("Operacion realizada");
                 }

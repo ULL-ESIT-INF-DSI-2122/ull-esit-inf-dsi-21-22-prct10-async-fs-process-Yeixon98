@@ -1,7 +1,7 @@
 import * as fs from "fs";
 
 export default class Watcher {
-  constructor(private filename: string) { }
+  constructor(private readonly filename: string) { }
 
   /**
    * Se pone a mirar los cambios del fichero que le pasemos

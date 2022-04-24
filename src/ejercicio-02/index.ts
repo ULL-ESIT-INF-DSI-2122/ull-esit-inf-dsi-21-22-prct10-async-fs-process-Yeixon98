@@ -1,5 +1,5 @@
-import AnalizeWithPipe from "./analizeWithPipe"
-import AnalizeWithOutPipe from "./analizeWithOutPipe"
+import AnalizeWithPipe from "./analizeWithPipe";
+import AnalizeWithOutPipe from "./analizeWithOutPipe";
 
 if (process.argv.length < 4) {
   console.log("---------- Help ----------");
@@ -17,6 +17,9 @@ if (process.argv.length < 4) {
   console.log("Palabra: ", word);
   console.log("Metodo: ", method);
 
-  if (method === "Pipe") new AnalizeWithPipe(path, word).exec()
-  else new AnalizeWithOutPipe(path, word).exec()
+  if (method === "Pipe") {
+    new AnalizeWithPipe(path, word).exec();
+  } else {
+    new AnalizeWithOutPipe(path, word).exec();
+  }
 }

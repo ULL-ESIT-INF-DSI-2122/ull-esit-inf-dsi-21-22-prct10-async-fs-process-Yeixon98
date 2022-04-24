@@ -2,7 +2,7 @@ import { spawn } from "child_process";
 import * as fs from "fs";
 
 export default class AnalizeWithPipe {
-  constructor(private path: string, private word: string) {}
+  constructor(private readonly path: string, private readonly word: string) {}
   exec = () => {
     fs.access(this.path, fs.constants.F_OK, (err) => {
       if (err) {
@@ -25,7 +25,7 @@ export default class AnalizeWithPipe {
             (oneWord) => oneWord === this.word
           ).length;
           console.log(
-            "La palabra " + this.word + " tiene un ocurrencia de " + result
+            `La palabra ${this.word} tiene un ocurrencia de ${result}`
           );
           return result;
         });
