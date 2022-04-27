@@ -68,8 +68,6 @@ _W_OK_: Nos dice si tenemos permisos de escritura del path.
 
 _X_OK_: Nos dice si tenemos permisos de ejecucuion del path.
 
-> <h2>Los test no se pueden llevar acabo en este ejercicio, debido a que todo el codigo trabaja de forma asincrona y se mantiene en ejecicion, sin un estado final definido.</h2>
-
 ***
 
 ## Ejercicio 2
@@ -131,8 +129,6 @@ grep.on('close', () => {
 >```
 >&nbsp;
 
-> <h2>Los test no se pueden llevar acabo en este ejercicio, debido a que todo el codigo trabaja de forma asincrona</h2>
-
 ***
 
 ## Ejercicio 3 
@@ -166,8 +162,6 @@ Cada vez que el se crea, modifica o elimina una nota del usuario, saldira en la 
 Con respecto a las perguntas finales, para ver el contenido del fichero que cambio, basta con tomar el nombre del fichero y hacer uso del spawn para invocar el comando `cat` sobre ese fichero y mostrar en la consola su contenido.
 
 Con la segunda pregunta, para resolverlo planteado podriamos hacer uso de un paquete `npm` que se llama [Chokidar](https://www.npmjs.com/package/chokidar) que nos permite realizar todas esas acciones.
-
-> <h2>Los test no se pueden llevar acabo en este ejercicio, debido a que todo el codigo trabaja de forma asincrona y se mantiene en ejecicion, sin un estado final definido.</h2>
 
 ***
 
@@ -203,7 +197,5 @@ Donde el codigo consta de 8 case, `help`, `check`, `mkdir`, `ll`, `cat`, `rm`, `
 * El _`rm`_ comprobamos que se nos indica una ruta, la cual borraremos, tambien comprobamos que existe esta ruta, para acontinuacion mediante el `spawn()` pasandole la funcion rm y como argumento del mismo -rf y la ruta, el -rf es para que borre todo indistinto de si es un directorio o fichero. cuando termina muestra un mensaje en la consola.
 
 * El _`mv`_ y _`cp`_ son practicamento lo mismo, comprobamos que se pasa una ruta origen y una ruta destino, luego comprobamos el acceso a dichas rutas, para a continuacion llevar una comprobacion muy larga haciendo uso del _check_ del inicio, ya que no se puede copiar ni mover un directorio a un fichero, pues comprobamos que son cada ruta y si no son directorio hacia fichero, se llama al `spawn()` pasandole como funcion el mv o cp y argumento en caso de cp el -r para que sea una copia recursiva, y las dos ruta de origen y destino, al finalizar mostramos un mensaje en la consola.
-
-> <h2>Los test no se pueden llevar acabo en este ejercicio, debido a que todo el codigo trabaja de forma asincrona</h2>
 
 ***
